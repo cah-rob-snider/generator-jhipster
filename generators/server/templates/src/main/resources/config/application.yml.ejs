@@ -118,7 +118,7 @@ management:
     endpoint:
         health:
             show-details: when_authorized
-            roles: "ROLE_ADMIN"
+            roles: 'A-OktaSSO-MedWebApps-Admin'
         jhimetrics:
             enabled: true
     info:
@@ -285,7 +285,7 @@ spring:
             client:
                 provider:
                     oidc:
-                        issuer-uri: http://localhost:9080/auth/realms/jhipster
+                        issuer-uri: https://uaa.apps.cf.np.gc.cahcloud.net/auth/realms/medwebapps
                 registration:
                     oidc:
                     <%_ if (applicationType === 'microservice') { _%>

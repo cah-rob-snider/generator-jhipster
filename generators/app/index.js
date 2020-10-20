@@ -303,6 +303,7 @@ module.exports = class extends BaseBlueprintGenerator {
                     this.applicationType = 'monolith';
                 }
                 this.baseName = this.config.get('baseName');
+                this.prettyAppName = this.config.get('prettyAppName');
                 this.jhipsterVersion = packagejs.version;
                 if (this.jhipsterVersion === undefined) {
                     this.jhipsterVersion = this.config.get('jhipsterVersion');
@@ -361,6 +362,7 @@ module.exports = class extends BaseBlueprintGenerator {
             askForInsightOptIn: prompts.askForInsightOptIn,
             askForApplicationType: prompts.askForApplicationType,
             askForModuleName: prompts.askForModuleName,
+            askForPrettyAppName: prompts.askForPrettyAppName,
         };
     }
 
@@ -374,6 +376,7 @@ module.exports = class extends BaseBlueprintGenerator {
             setup() {
                 this.configOptions.skipI18nQuestion = true;
                 this.configOptions.baseName = this.baseName;
+                this.configOptions.prettyAppName = this.prettyAppName;
                 this.configOptions.logo = false;
                 this.configOptions.otherModules = this.otherModules;
                 this.generatorType = 'app';
@@ -486,6 +489,7 @@ module.exports = class extends BaseBlueprintGenerator {
                     creationTimestamp,
                     applicationType: this.applicationType,
                     baseName: this.baseName,
+                    prettyAppName: this.prettyAppName,
                     testFrameworks: this.testFrameworks,
                     jhiPrefix: this.jhiPrefix,
                     entitySuffix: this.entitySuffix,

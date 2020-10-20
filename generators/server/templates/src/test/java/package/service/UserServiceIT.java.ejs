@@ -256,6 +256,7 @@ public class UserServiceIT <% if (databaseType === 'cassandra') { %>extends Abst
         <%_ if (authenticationType === 'oauth2' ) { _%>
 
         userDetails = new HashMap<>();
+        userDetails.put("preferred_username", DEFAULT_LOGIN);
         userDetails.put("sub", DEFAULT_LOGIN);
         userDetails.put("email", DEFAULT_EMAIL);
         userDetails.put("given_name", DEFAULT_FIRSTNAME);

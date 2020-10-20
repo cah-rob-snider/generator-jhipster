@@ -72,7 +72,7 @@ public class SecurityUtilsUnitTest {
     public void testGetCurrentUserLoginForOAuth2() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         Map<String, Object> claims = new HashMap<>();
-        claims.put("groups", "ROLE_USER");
+        claims.put("groups", "A-OktaSSO-<%= oktaUserGroup %>-User");
         claims.put("sub", 123);
         claims.put("preferred_username", "admin");
         OidcIdToken idToken = new OidcIdToken(ID_TOKEN, Instant.now(),

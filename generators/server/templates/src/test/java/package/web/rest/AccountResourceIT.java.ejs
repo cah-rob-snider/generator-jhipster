@@ -132,6 +132,7 @@ public class AccountResourceIT <% if (databaseType === 'cassandra') { %>extends 
     public void testGetExistingAccount() <% if (!reactive) { %>throws Exception <% } %>{
     <%_ if (!reactive) { _%>
         Map<String, Object> userDetails = new HashMap<>();
+        userDetails.put("preferred_username", TEST_USER_LOGIN);
         userDetails.put("sub", TEST_USER_LOGIN);
         userDetails.put("email", "john.doe@jhipster.com");
         Collection<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.ADMIN));

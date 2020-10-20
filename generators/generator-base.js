@@ -1684,7 +1684,7 @@ module.exports = class extends PrivateBase {
         this.log(`${chalk.green('  ╚██████╔╝')}${chalk.red(' ██║   ██║ ████████╗ ██║       ██████╔╝    ██║    ████████╗ ██║  ╚██╗')}`);
         this.log(`${chalk.green('   ╚═════╝ ')}${chalk.red(' ╚═╝   ╚═╝ ╚═══════╝ ╚═╝       ╚═════╝     ╚═╝    ╚═══════╝ ╚═╝   ╚═╝')}\n`);
         this.log(chalk.white.bold('                            https://www.jhipster.tech\n'));
-        this.log(chalk.white('Welcome to JHipster ') + chalk.yellow(`v${packagejs.version}`));
+        this.log(chalk.white('Welcome to JHipster ') + chalk.yellow(`v${packagejs.version}-cah`));
         this.log(chalk.white(`Application files will be generated in folder: ${chalk.yellow(process.cwd())}`));
         if (process.cwd() === this.getUserHome()) {
             this.log(chalk.red.bold('\n️⚠️  WARNING ⚠️  You are in your HOME folder!'));
@@ -1776,6 +1776,14 @@ module.exports = class extends PrivateBase {
     }
 
     /**
+     * get the okta user group name.
+     * @param {string} prettyAppName of application
+     */
+    getOktaUserGroupName(prettyAppName = this.prettyAppName) {
+        return prettyAppName.replace(/\s/g, '');
+    }
+
+    /**
      * get the an upperFirst camelCase value.
      * @param {string} value string to convert
      */
@@ -1847,6 +1855,27 @@ module.exports = class extends PrivateBase {
             })
             .then(prompt => {
                 generator.baseName = prompt.baseName;
+                done();
+            });
+    }
+
+    /**
+     * ask a prompt for the pretty app name.
+     *
+     * @param {object} generator - generator instance to use
+     */
+    askPrettyAppName(generator) {
+        const done = generator.async();
+        const defaultAppBaseName = this.getDefaultAppName();
+        generator
+            .prompt({
+                type: 'input',
+                name: 'prettyAppName',
+                message: 'What is the name of your application that you would like to display in the navbar?',
+                default: defaultAppBaseName,
+            })
+            .then(prompt => {
+                generator.prettyAppName = prompt.prettyAppName;
                 done();
             });
     }
@@ -2068,6 +2097,7 @@ module.exports = class extends PrivateBase {
         dest.skipCommitHook = context.options['skip-commit-hook'] || context.config.get('skipCommitHook');
         dest.otherModules = context.configOptions.otherModules || [];
         dest.baseName = context.configOptions.baseName;
+        dest.prettyAppName = context.configOptions.prettyAppName;
         dest.logo = context.configOptions.logo;
         dest.clientPackageManager = context.configOptions.clientPackageManager;
         dest.isDebugEnabled = context.configOptions.isDebugEnabled || context.options.debug;

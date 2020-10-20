@@ -24,6 +24,7 @@ module.exports = {
     askForInsightOptIn,
     askForApplicationType,
     askForModuleName,
+    askForPrettyAppName,
     askForI18n,
     askFori18n,
     askForTestOpts,
@@ -105,6 +106,11 @@ function askForApplicationType(meta) {
 function askForModuleName() {
     if (this.existingProject) return;
     this.askModuleName(this);
+}
+
+function askForPrettyAppName() {
+    if (this.existingProject) return;
+    this.askPrettyAppName(this);
 }
 
 function askForI18n() {

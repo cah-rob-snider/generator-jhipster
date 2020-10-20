@@ -979,6 +979,8 @@ public class UserService {
     }
 
     private static <%= databaseType === 'no' ? asDto('User') : asEntity('User') %> getUser(Map<String, Object> details) {
+        String enterpriseId = ((String) details.get("preferred_username")).replaceAll("@.*", "").toLowerCase();
+
         <%= databaseType === 'no' ? asDto('User') : asEntity('User') %> user = new <%= databaseType === 'no' ? asDto('User') : asEntity('User') %>();
         // handle resource server JWT, where sub claim is email and uid is ID
         if (details.get("uid") != null) {
@@ -988,7 +990,8 @@ public class UserService {
             user.setId((String) details.get("sub"));
         }
         if (details.get("preferred_username") != null) {
-            user.setLogin(((String) details.get("preferred_username")).toLowerCase());
+            user.setLogin(enterpriseId);
+            user.setId(enterpriseId);
         } else if (user.getLogin() == null) {
             user.setLogin(user.getId());
         }

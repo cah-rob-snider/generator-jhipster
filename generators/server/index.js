@@ -147,6 +147,7 @@ module.exports = class extends BaseBlueprintGenerator {
                 if (!this.applicationType) {
                     this.applicationType = 'monolith';
                 }
+                this.oktaUserGroup = configuration.get('oktaUserGroup');
                 this.reactive = configuration.get('reactive') || this.configOptions.reactive;
                 this.packageName = configuration.get('packageName');
                 this.serverPort = configuration.get('serverPort');
@@ -364,6 +365,7 @@ module.exports = class extends BaseBlueprintGenerator {
                 this.configOptions.buildTool = this.buildTool;
                 this.configOptions.enableSwaggerCodegen = this.enableSwaggerCodegen;
                 this.configOptions.authenticationType = this.authenticationType;
+                this.configOptions.oktaUserGroup = this.oktaUserGroup;
                 const uaaBaseName = this.uaaBaseName;
                 if (uaaBaseName) {
                     this.configOptions.uaaBaseName = this.uaaBaseName;
@@ -430,10 +432,12 @@ module.exports = class extends BaseBlueprintGenerator {
                     jhipsterVersion: packagejs.version,
                     applicationType: this.applicationType,
                     baseName: this.baseName,
+                    prettyAppName: this.prettyAppName,
                     packageName: this.packageName,
                     packageFolder: this.packageFolder,
                     serverPort: this.serverPort,
                     authenticationType: this.authenticationType,
+                    oktaUserGroup: this.oktaUserGroup,
                     uaaBaseName: this.uaaBaseName,
                     cacheProvider: this.cacheProvider,
                     enableHibernateCache: this.enableHibernateCache,

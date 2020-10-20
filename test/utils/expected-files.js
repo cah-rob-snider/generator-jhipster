@@ -167,6 +167,7 @@ const expectedFiles = {
         `${SERVER_MAIN_RES_DIR}logback-spring.xml`,
         `${SERVER_MAIN_RES_DIR}config/application.yml`,
         `${SERVER_MAIN_RES_DIR}config/application-dev.yml`,
+        `${SERVER_MAIN_RES_DIR}config/application-stage.yml`,
         `${SERVER_MAIN_RES_DIR}config/application-prod.yml`,
         `${SERVER_MAIN_RES_DIR}config/liquibase/changelog/00000000000000_initial_schema.xml`,
         `${SERVER_MAIN_RES_DIR}config/liquibase/master.xml`,

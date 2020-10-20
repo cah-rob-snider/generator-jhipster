@@ -18,16 +18,25 @@
 -%>
 package <%= packageName %>.security;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
+
 /**
  * Constants for Spring Security authorities.
  */
 public final class AuthoritiesConstants {
 
-    public static final String ADMIN = "ROLE_ADMIN";
+    public static final String ADMIN = "A-OktaSSO-MedWebApps-Admin";
 
-    public static final String USER = "ROLE_USER";
+    public static final String USER = "A-OktaSSO-<%= oktaUserGroup %>-User";
 
     public static final String ANONYMOUS = "ROLE_ANONYMOUS";
+
+    public static final List<String> ALLOW_ACCESS = ImmutableList.of(
+        // TODO: Add user groups that need access
+        ADMIN
+    );
 
     private AuthoritiesConstants() {
     }

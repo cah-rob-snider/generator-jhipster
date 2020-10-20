@@ -141,6 +141,17 @@ function askForServerSideOpts(meta) {
             default: 0,
         },
         {
+            when: response => (applicationType === 'monolith' && response.authenticationType === 'oauth2'),
+            type: 'input',
+            name: 'oktaUserGroup',
+            message: 'What is the faux Okta User Group (for A-OktaSSO-MyNewApp-User it would be MyNewApp)?',
+            default: this.getOktaUserGroupName(),
+            validate: input =>
+                /\b([A-Z][a-z]+)+/.test(input)
+                    ? true
+                    : 'The Okta User Group must be PascalCased (e.g. MyNewApp)',
+        },
+        {
             when: response =>
                 (applicationType === 'gateway' || applicationType === 'microservice') && response.authenticationType === 'uaa',
             type: 'input',
@@ -301,6 +312,7 @@ function askForServerSideOpts(meta) {
     this.prompt(prompts).then(props => {
         this.serviceDiscoveryType = props.serviceDiscoveryType;
         this.authenticationType = props.authenticationType;
+        this.oktaUserGroup = props.oktaUserGroup;
 
         // JWT authentication is mandatory with Eureka, so the JHipster Registry
         // can control the applications

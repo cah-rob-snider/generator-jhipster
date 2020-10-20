@@ -82,11 +82,13 @@ public final class SecurityUtils {
             return springSecurityUser.getUsername();
 <%_ if (authenticationType === 'oauth2') { _%>
         } else if (authentication instanceof JwtAuthenticationToken) {
-            return (String) ((JwtAuthenticationToken)authentication).getToken().getClaims().get("preferred_username");
+            String preferredUsername = (String) ((JwtAuthenticationToken)authentication).getToken().getClaims().get("preferred_username");
+            return (preferredUsername).replaceAll("@.*", "").toLowerCase();
         } else if (authentication.getPrincipal() instanceof DefaultOidcUser) {
             Map<String, Object> attributes = ((DefaultOidcUser) authentication.getPrincipal()).getAttributes();
             if (attributes.containsKey("preferred_username")) {
-                return (String) attributes.get("preferred_username");
+                String preferredUsername = (String) (attributes.get("preferred_username"));
+                return (preferredUsername).replaceAll("@.*", "").toLowerCase();
             }
 <%_ } _%>
         } else if (authentication.getPrincipal() instanceof String) {
@@ -186,10 +188,19 @@ public final class SecurityUtils {
     }
 
     private static List<GrantedAuthority> mapRolesToGrantedAuthorities(Collection<String> roles) {
-        return roles.stream()
-            .filter(role -> role.startsWith("ROLE_"))
+        List<GrantedAuthority> authorities = roles.stream()
+            .filter(role -> role.startsWith("A-OktaSSO-MedWebApps-"))
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
+
+        Stream<GrantedAuthority> hasAccess = authorities.stream()
+            .filter(a -> AuthoritiesConstants.ALLOW_ACCESS.contains(a.getAuthority()));
+
+        if (hasAccess.count() > 0) {
+            authorities.add(0, new SimpleGrantedAuthority(AuthoritiesConstants.USER));
+        }
+
+        return authorities;
     }
 <%_ } _%>
 }

@@ -33,10 +33,10 @@
 
 logging:
     level:
-        ROOT: INFO
-        io.github.jhipster: INFO
+        ROOT: DEBUG
+        io.github.jhipster: DEBUG
         <%_ if (packageName !== 'io.github.jhipster') { _%>
-        <%= packageName %>: INFO
+        <%= packageName %>: DEBUG
         <%_ } _%>
         <%_ if (databaseType === 'neo4j') { _%>
         org.neo4j.driver: WARN
@@ -67,13 +67,12 @@ org:
             packages-to-scan: <%= packageName %>.config.neo4j
             installed-by: <%= baseName %>
 <%_ } _%>
-management:
-    metrics:
-        export:
-            prometheus:
-                enabled: false
 
 spring:
+    profiles:
+        active: dev
+        include:
+            - swagger
     devtools:
         restart:
             enabled: false
@@ -261,9 +260,14 @@ jhipster:
             app1: /api # recommended prod configuration
         <%_ } _%>
     <%_ } _%>
-    http:
-        cache: # Used by the CachingHttpHeadersFilter
-            timeToLiveInDays: 1461
+    # CORS is only enabled by default with the "dev" profile, so BrowserSync can access the API
+    cors:
+        allowed-origins: '*'
+        allowed-methods: '*'
+        allowed-headers: '*'
+        exposed-headers: 'Authorization,Link,X-Total-Count'
+        allow-credentials: true
+        max-age: 1800
     <%_ if (cacheProvider !== 'no') { _%>
     cache: # Cache configuration
         <%_ if (cacheProvider === 'hazelcast') { _%>
