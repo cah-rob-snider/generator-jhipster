@@ -18,9 +18,7 @@
 -%>
 buildscript {
     repositories {
-        mavenLocal()
-        mavenCentral()
-        gradlePluginPortal()
+        maven { url "https://nexus.cardinalhealth.net/repository/maven/"}
         maven { url "https://repo.spring.io/plugins-release" }
     }
     dependencies {
@@ -257,9 +255,6 @@ configurations {
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
     <%_ if (reactive && (applicationType === 'gateway' || applicationType === 'monolith')) { _%>
     maven {
         url "https://oss.jfrog.org/artifactory/oss-snapshot-local/"
@@ -277,6 +272,9 @@ repositories {
     }
     <%_ } _%>
     //jhipster-needle-gradle-repositories - JHipster will add additional repositories
+    maven { 
+        url "https://nexus.cardinalhealth.net/repository/maven/"
+    }
 }
 
 dependencies {
@@ -494,6 +492,7 @@ dependencies {
     implementation "org.springframework.security:spring-security-messaging"
     <%_ } _%>
     <%_ if (authenticationType === 'oauth2') { _%>
+    implementation "com.nimbusds:lang-tag:1.4.3"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     <%_ } _%>
@@ -653,6 +652,7 @@ if (project.hasProperty("nodeInstall")) {
         npmVersion = "${npm_version}"
         yarnVersion = "${yarn_version}"
         download = true
+        distBaseUrl = 'https://nexus.cardinalhealth.net/repository/raw-node-dist/'
     }
 }
 <%_ } _%>
@@ -664,3 +664,13 @@ bootJar {
 <%_ } _%>
 compileJava.dependsOn processResources
 processResources.dependsOn bootBuildInfo
+
+npmInstall {
+    args = ['--no-audit']
+}
+
+clean {
+    delete rootProject.buildDir
+    delete './out'
+    delete './src/main/generated'
+}
