@@ -126,6 +126,16 @@ module.exports = class extends BaseBlueprintGenerator {
                     this.baseName = baseName;
                 }
 
+                const prettyAppName = configuration.get('prettyAppName') || this.configOptions.prettyAppName;
+                if (prettyAppName) {
+                    this.prettyAppName = prettyAppName;
+                }
+
+                const oktaUserGroup = configuration.get('oktaUserGroup') || this.configOptions.oktaUserGroup;
+                if (oktaUserGroup) {
+                    this.oktaUserGroup = oktaUserGroup;
+                }
+
                 this.serviceDiscoveryType =
                     configuration.get('serviceDiscoveryType') === 'no'
                         ? false
@@ -188,6 +198,7 @@ module.exports = class extends BaseBlueprintGenerator {
     _prompting() {
         return {
             askForModuleName: prompts.askForModuleName,
+            askForPrettyAppName: prompts.askForPrettyAppName,
             askForClient: prompts.askForClient,
             askFori18n: prompts.askForI18n,
             askForClientTheme: prompts.askForClientTheme,
@@ -245,6 +256,7 @@ module.exports = class extends BaseBlueprintGenerator {
                     jhipsterVersion: packagejs.version,
                     applicationType: this.applicationType,
                     baseName: this.baseName,
+                    prettyAppName: this.prettyAppName,
                     useSass: true,
                     enableTranslation: this.enableTranslation,
                     skipCommitHook: this.skipCommitHook,

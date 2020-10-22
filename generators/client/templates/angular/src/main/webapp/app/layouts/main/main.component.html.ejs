@@ -16,16 +16,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
-<<%= jhiPrefixDashed %>-page-ribbon></<%= jhiPrefixDashed %>-page-ribbon>
+<div class="Main--container">
+    <div class="Main--content">
+        <<%= jhiPrefixDashed %>-page-ribbon></<%= jhiPrefixDashed %>-page-ribbon>
 
-<div>
-    <router-outlet name="navbar"></router-outlet>
-</div>
+        <div>
+            <router-outlet name="navbar"></router-outlet>
+        </div>
 
-<div class="container-fluid">
-    <div class="card jh-card">
-        <router-outlet></router-outlet>
+        <div class="container-fluid">
+            <div class="card jh-card mt-0">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
     </div>
 
-    <<%= jhiPrefixDashed %>-footer></<%= jhiPrefixDashed %>-footer>
+    <<%= jhiPrefixDashed %>-footer class="Main--footer bg-primary d-flex flex-column justify-content-center"></<%= jhiPrefixDashed %>-footer>
 </div>

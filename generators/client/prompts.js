@@ -24,6 +24,7 @@ const REACT = constants.SUPPORTED_CLIENT_FRAMEWORKS.REACT;
 
 module.exports = {
     askForModuleName,
+    askForPrettyAppName,
     askForClient,
     askForI18n,
     askFori18n,
@@ -35,6 +36,12 @@ function askForModuleName() {
     if (this.baseName) return;
 
     this.askModuleName(this);
+}
+
+function askForPrettyAppName() {
+    if (this.prettyAppName) return;
+
+    this.askPrettyAppName(this);
 }
 
 function askForClient(meta) {

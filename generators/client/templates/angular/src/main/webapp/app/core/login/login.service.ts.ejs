@@ -37,6 +37,7 @@ import { Logout } from './logout.model';
 <%_ } else { _%>
 import { Login } from './login.model';
 <%_ } _%>
+import { StateStorageService } from 'app/core/auth/state-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
@@ -46,13 +47,15 @@ export class LoginService {
         <%_ } else { _%>
         private accountService: AccountService,
         <%_ } _%>
-        private authServerProvider: AuthServerProvider
+        private authServerProvider: AuthServerProvider,
+        private stateStorageService: StateStorageService,
     ) {}
 
     <%_ if (authenticationType === 'oauth2') { _%>
     login(): void {
         // If you have configured multiple OIDC providers, then, you can update this URL to /login.
         // It will show a Spring Security generated login page with links to configured OIDC providers.
+        this.stateStorageService.storeUrl('/dashboard');
         location.href = `${location.origin}${this.location.prepareExternalUrl('oauth2/authorization/oidc')}`;
     }
     <%_ } else { _%>

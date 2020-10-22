@@ -53,7 +53,12 @@ const files = {
     sass: [
         {
             path: MAIN_SRC_DIR,
-            templates: ['content/scss/_bootstrap-variables.scss', 'content/scss/global.scss', 'content/scss/vendor.scss'],
+            templates: [
+                'content/scss/_bootstrap-variables.scss',
+                'content/scss/global.scss',
+                'content/scss/vendor.scss',
+                'content/scss/cah-ngx-datatable.scss'
+            ],
         },
         {
             condition: generator => generator.enableI18nRTL,
@@ -65,27 +70,8 @@ const files = {
         {
             path: MAIN_SRC_DIR,
             templates: [
-                { file: 'content/images/jhipster_family_member_0.svg', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_1.svg', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_2.svg', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_3.svg', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_0_head-192.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_1_head-192.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_2_head-192.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_3_head-192.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_0_head-256.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_1_head-256.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_2_head-256.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_3_head-256.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_0_head-384.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_1_head-384.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_2_head-384.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_3_head-384.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_0_head-512.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_1_head-512.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_2_head-512.png', method: 'copy' },
-                { file: 'content/images/jhipster_family_member_3_head-512.png', method: 'copy' },
-                { file: 'content/images/logo-jhipster.png', method: 'copy' },
+                { file: 'content/images/logo.png', method: 'copy' },
+                { file: 'content/images/logo-full.png', method: 'copy' },
             ],
         },
     ],
@@ -145,11 +131,17 @@ const files = {
                 { file: 'home/home.route.ts', method: 'processJs' },
                 { file: 'home/home.component.ts', method: 'processJs' },
                 { file: 'home/home.component.html', method: 'processHtml' },
+                // dashboard module
+                { file: 'dashboard/dashboard.component.html', method: 'processHtml' },
+                { file: 'dashboard/dashboard.component.ts', method: 'processJs' },
+                { file: 'dashboard/dashboard.module.ts', method: 'processJs' },
+                { file: 'dashboard/dashboard.service.ts', method: 'processJs' },
                 // layouts
                 'layouts/profiles/page-ribbon.component.ts',
                 'layouts/profiles/profile.service.ts',
                 'layouts/profiles/profile-info.model.ts',
                 'layouts/main/main.component.ts',
+                'layouts/main/main.component.scss',
                 'layouts/main/main.component.html',
                 { file: 'layouts/navbar/navbar.component.ts', method: 'processJs' },
                 { file: 'layouts/navbar/navbar.component.html', method: 'processHtml' },
@@ -168,7 +160,7 @@ const files = {
         },
         {
             path: ANGULAR_DIR,
-            templates: ['layouts/profiles/page-ribbon.scss', 'layouts/navbar/navbar.scss', 'home/home.scss'],
+            templates: ['layouts/profiles/page-ribbon.scss', 'layouts/navbar/navbar.scss', 'home/home.scss', 'dashboard/dashboard.component.scss'],
         },
     ],
     angularAccountModule: [

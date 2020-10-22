@@ -48,6 +48,14 @@ const LAYOUT_ROUTES = [
                     loadChildren: () => import('./account/account.module').then(m => m.AccountModule)
                 },
                 <%_ } _%>
+                {
+                    path: 'dashboard',
+                    data: {
+                        authorities: [Authority.USER, Authority.ADMIN],
+                    },
+                    canActivate: [UserRouteAccessService],
+                    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+                },
                 ...LAYOUT_ROUTES
             ],
             { enableTracing: DEBUG_INFO_ENABLED }

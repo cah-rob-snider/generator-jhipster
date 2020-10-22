@@ -33,6 +33,7 @@ import { LoginModalService } from 'app/core/login/login-modal.service';
 <%_ } _%>
 import { LoginService } from 'app/core/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
+import { Authority } from 'app/shared/constants/authority.constants';
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-navbar',
@@ -49,6 +50,8 @@ export class NavbarComponent implements OnInit {
     <%_ } _%>
     swaggerEnabled?: boolean;
     version: string;
+
+    Authority = Authority;
 
     constructor(
         private loginService: LoginService,

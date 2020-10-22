@@ -30,7 +30,8 @@ import { FindLanguageFromKeyPipe } from 'app/shared/language/find-language-from-
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-main',
-    templateUrl: './main.component.html'
+    templateUrl: './main.component.html',
+    styleUrls: ['./main.component.scss'],
 })
 export class MainComponent implements OnInit {
     <%_ if (enableTranslation) { _%>
@@ -91,7 +92,7 @@ export class MainComponent implements OnInit {
     private updateTitle(): void {
         let pageTitle = this.getPageTitle(this.router.routerState.snapshot.root);
         if (!pageTitle) {
-            pageTitle = '<% if (enableTranslation) { %>global.title<% } else { %><%= capitalizedBaseName %><% } %>';
+            pageTitle = '<% if (enableTranslation) { %>global.title<% } else { %><%= prettyAppName %><% } %>';
         }
         <%_ if (enableTranslation) { _%>
         this.translateService.get(pageTitle).subscribe(title => this.titleService.setTitle(title));

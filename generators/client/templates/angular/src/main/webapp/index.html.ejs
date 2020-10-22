@@ -19,17 +19,20 @@
 <!doctype html>
 <html class="no-js" lang="<% if (enableTranslation) { %><%= nativeLanguage %><% } else { %>en<% } %>" dir="ltr">
 <head>
+    <base href="/" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><%= baseName %></title>
+    <title><%= prettyAppName %></title>
     <meta name="description" content="Description for <%= baseName %>"><% if (enableTranslation) { %>
     <meta name="google" content="notranslate"><% } %>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
-    <link rel="icon" href="favicon.ico" />
+    <link rel="shortcut icon" href="favicon.ico" />
     <link rel="manifest" href="manifest.webapp" />
     <link rel="stylesheet" href="content/css/loading.css">
     <!-- jhipster-needle-add-resources-to-root - JHipster will add new resources here -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/solid.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" />
 </head>
 <body>
     <!--[if lt IE 9]>

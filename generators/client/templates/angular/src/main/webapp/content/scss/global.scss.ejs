@@ -22,6 +22,11 @@
 @import "~bootswatch/dist/<%= clientTheme %>/variables";
 <%_ } _%>
 @import '~bootstrap/scss/variables';
+@import '~@ng-select/ng-select/themes/default.theme.css';
+@import '~@swimlane/ngx-datatable/index.css';
+@import '~@swimlane/ngx-datatable/themes/bootstrap.css';
+@import '~@swimlane/ngx-datatable/assets/icons.css';
+@import './cah-ngx-datatable';
 
 /* ==============================================================
 Bootstrap tweaks
@@ -218,3 +223,143 @@ ui bootstrap tweaks
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+/* ==============================================================
+NgSelect tweaks
+===============================================================*/
+
+.ng-select.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+    border-color: $primary;
+}
+
+body > .ng-dropdown-panel {
+    margin-left: 1px; // fixes weird offset issue with body height set to 100%
+}
+
+/* ==============================================================
+Angular 2 Multiselect Dropdown tweaks
+===============================================================*/
+
+.MultiSelect--button {
+    display: flex !important;
+    align-items: center !important;
+    background-color: white !important;
+    border: 1px solid rgb(204, 204, 204) !important;
+    min-height: 32px !important;
+
+    .caret {
+        flex: 1 !important;
+    }
+
+    &::after {
+        display: inline-block !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin-right: -3px !important;
+        vertical-align: middle !important;
+        content: '' !important;
+        border-top: 5px solid !important;
+        border-right: 5px solid transparent !important;
+        border-left: 5px solid transparent !important;
+        opacity: 0.5 !important;
+    }
+}
+
+/* ==============================================================
+Utilities
+===============================================================*/
+
+.tooltip {
+    text-transform: none !important;
+}
+
+.ws-nowrap {
+    white-space: nowrap;
+}
+
+.btn-outline-default {
+    color: #ced4da;
+    border-color: #ced4da;
+}
+
+.btn-outline-default:hover {
+    background-color: #e0e5e9;
+}
+
+.input-disabled {
+    pointer-events: none;
+}
+
+.hide {
+    display: none;
+}
+
+.v-divider {
+    background-color: #dddddd;
+    width: 1px;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.w-fit-content {
+    width: fit-content;
+}
+
+.text-overflow-ellipse {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.outline-none {
+    outline: none;
+}
+
+.no-resize {
+    resize: none;
+}
+
+.c-pointer {
+    cursor: pointer;
+}
+
+/* ==============================================================
+Invalid Styling
+===============================================================*/
+
+.ng-invalid[required]:not([required='false']):not(:disabled):not(ng-select):not(jhi-adder-typeahead):not(jqxListBox):not(jhi-radio-group),
+ng-select.ng-invalid[required]:not([required='false']) .ng-select-container,
+.TextAreaCounter--invalid {
+border-left: 5px solid #a94442 !important;
+}
+
+/* ==============================================================
+Accordion tweaks
+===============================================================*/
+
+accordion-group {
+    margin-bottom: 1rem;
+
+    .accordion-toggle {
+        padding-left: 0.75rem;
+
+        &::before {
+            font-family: 'Font Awesome 5 Free', serif;
+            content: '\f078';
+            font-weight: 900;
+            transition: transform 0.3s ease-in-out;
+            display: inline-block;
+        }
+    }
+
+    &.panel-open .accordion-toggle::before {
+        transform: rotate(180deg);
+    }
+
+    .panel-heading {
+        padding: 0.25rem;
+    }
+
+    .panel-body {
+        padding: 1rem;
+    }
+}
