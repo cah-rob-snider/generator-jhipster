@@ -1,0 +1,51 @@
+<%#
+ Copyright 2013-2020 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+package <%= packageName %>.web.rest.custom;
+
+<%_
+const customServiceClassName = entityClass + 'CustomService';
+const customServiceInstanceName = entityInstance + 'CustomService';
+_%>
+import <%= packageName %>.service.custom.<%= customServiceClassName %>;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+* Custom REST controller for managing {@link <%= packageName %>.domain.<%= asEntity(entityClass) %>}.
+*/
+@RestController
+@RequestMapping("/api")
+public class <%= asEntity(entityClass) %>CustomResource {
+
+    private final Logger log = LoggerFactory.getLogger(<%= asEntity(entityClass) %>CustomResource.class);
+
+    private static final String ENTITY_NAME = "<%= entityInstance %>";
+
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
+    private final <%= customServiceClassName %> <%= customServiceInstanceName %>;
+
+    public <%= asEntity(entityClass) %>CustomResource(<%= customServiceClassName %> <%= customServiceInstanceName %>) {
+        this.<%= customServiceInstanceName %> = <%= customServiceInstanceName %>;
+    }
+}

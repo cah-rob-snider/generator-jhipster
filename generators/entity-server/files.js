@@ -238,6 +238,36 @@ const serverFiles = {
                 },
             ],
         },
+        {
+            condition: generator => fs.existsSync(`${SERVER_MAIN_SRC_DIR}/${generator.packageFolder}/repository/custom/${generator.entityClass}CustomRepository.java`) === false,
+            path: SERVER_MAIN_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/repository/custom/EntityCustomRepository.java',
+                    renameTo: generator => `${generator.packageFolder}/repository/custom/${generator.entityClass}CustomRepository.java`,
+                },
+            ]
+        },
+        {
+            condition: generator => fs.existsSync(`${SERVER_MAIN_SRC_DIR}/${generator.packageFolder}/service/custom/${generator.entityClass}CustomService.java`) === false,
+            path: SERVER_MAIN_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/service/custom/EntityCustomService.java',
+                    renameTo: generator => `${generator.packageFolder}/service/custom/${generator.entityClass}CustomService.java`,
+                },
+            ]
+        },
+        {
+            condition: generator => fs.existsSync(`${SERVER_MAIN_SRC_DIR}/${generator.packageFolder}/web/rest/custom/${generator.entityClass}CustomResource.java`) === false,
+            path: SERVER_MAIN_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/web/rest/custom/EntityCustomResource.java',
+                    renameTo: generator => `${generator.packageFolder}/web/rest/custom/${generator.entityClass}CustomResource.java`,
+                },
+            ]
+        },
     ],
     test: [
         {
