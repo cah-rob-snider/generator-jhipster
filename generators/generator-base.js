@@ -1776,11 +1776,19 @@ module.exports = class extends PrivateBase {
     }
 
     /**
-     * get the okta user group name.
+     * get the pretty name without spaces
      * @param {string} prettyAppName of application
      */
-    getOktaUserGroupName(prettyAppName = this.prettyAppName) {
+    getPrettyNameNoSpaces(prettyAppName = this.prettyAppName) {
         return prettyAppName.replace(/\s/g, '');
+    }
+
+    /**
+     * get the pretty name with underscores and all caps
+     * @param {string} prettyAppName of application
+     */
+    getPrettyNameCapsLodash(prettyAppName = this.prettyAppName) {
+        return _.capitalize(prettyAppName.replace(/\s/g, '_'));
     }
 
     /**

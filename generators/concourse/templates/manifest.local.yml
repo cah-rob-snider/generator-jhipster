@@ -1,0 +1,18 @@
+---
+applications:
+  - name: <VAULT_KEY.PCF_SPACE>
+    memory: 2GB
+    instance_limits:
+      min: 1
+      max: 1
+    random-route: true
+    path: ../build/libs/<VAULT_KEY.APP_NAME>-0.0.1-SNAPSHOT.war
+    buildpacks:
+      - java_buildpack_offline
+    routes:
+      - route: <VAULT_KEY.PCF_SPACE>.apps.cf.np.gc.cahcloud.net
+    services:
+      - postgres-stage
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: "{ jre: { version: 11.+ } }"
+  

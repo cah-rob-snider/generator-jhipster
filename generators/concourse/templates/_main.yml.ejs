@@ -1,0 +1,464 @@
+groups:
+  - name: create-snapshot
+    jobs:
+      - build-test-scan
+      - check-static-analysis
+      - qualitygate
+      - publish-snapshot
+  - name: promote-snapshot
+    jobs:
+      - promote-snapshot
+  - name: deploy-to-stage
+    jobs:
+      - pull-jar-stage
+  - name: deploy-to-prod
+    jobs:
+      - pull-jar-prod
+
+env-param: &env-params
+  CURRENT_ENV: dev
+  APP_NAME: ((<%= vaultKey %>.APP_NAME))
+
+sonar-properties: &sonar-properties
+  sonar.projectKey: ((<%= vaultKey %>.APP_NAME))
+  sonar.projectName: ((<%= vaultKey %>.APP_NAME))
+  sonar.projectVersion: 0.0.0
+  sonar.projectDescription: "simple app to test Concourse SonarQube CI/CD android analysys"
+  sonar.sources: src/main/
+  sonar.tests: src/test/
+  sonar.java.binaries: build
+  sonar.sourceEncoding: UTF-8
+
+  sonar.coverage.jacoco.xmlReportPaths: build/reports/jacoco/test/jacocoTestReport.xml
+  sonar.java.codeCoveragePlugin: jacoco
+  sonar.testExecutionReportPaths: build/test-results/jest/TESTS-results-sonar.xml
+  sonar.typescript.lcov.reportPaths: build/test-results/lcov.info
+  sonar.exclusions: src/main/webapp/content/**/*.*, src/main/webapp/i18n/*.js, build/resources/main/static/**/*.*, src/main/java/**/domain, src/main/webapp/app/admin/**, src/main/webapp/app/entities/**, src/main/webapp/app/core/**, src/main/webapp/app/blocks/**, src/main/webapp/app/layout/**, src/main/java/**/*App.java, src/main/webapp/swagger-ui/**/*.*, src/main/resources/**/*.html
+  sonar.coverage.exclusions: src/main/webapp/**, src/main/java/**/config/**, src/main/java/**/security/**, src/main/java/**/aop/**, src/main/java/**/*DTO*, src/main/java/**/service/*QueryService.java, src/main/java/**/domain/**, src/main/java/**/*App.java, src/main/java/**/UserService.java, src/main/java/**/*Criteria*
+  sonar.shell.file.suffixes: .ksh
+
+  sonar.issue.ignore.multicriteria: S5256,S3437,S4670,S4684,UndocumentedApi,BoldAndItalicTagsCheck,FieldsetWithoutLegendCheck,TableWithoutCaptionCheck
+  sonar.issue.ignore.multicriteria.S3437.resourceKey: src/main/java/**/*
+  sonar.issue.ignore.multicriteria.S3437.ruleKey: squid:S3437
+  sonar.issue.ignore.multicriteria.UndocumentedApi.resourceKey: src/main/java/**/*
+  sonar.issue.ignore.multicriteria.UndocumentedApi.ruleKey: squid:UndocumentedApi
+  sonar.issue.ignore.multicriteria.S4684.resourceKey: src/main/java/**/*
+  sonar.issue.ignore.multicriteria.S4684.ruleKey: squid:S4684
+  sonar.issue.ignore.multicriteria.BoldAndItalicTagsCheck.resourceKey: src/main/webapp/app/**/*.*
+  sonar.issue.ignore.multicriteria.BoldAndItalicTagsCheck.ruleKey: Web:BoldAndItalicTagsCheck
+  sonar.issue.ignore.multicriteria.FieldsetWithoutLegendCheck.resourceKey: src/main/webapp/app/**/*.*
+  sonar.issue.ignore.multicriteria.FieldsetWithoutLegendCheck.ruleKey: Web:FieldsetWithoutLegendCheck
+  sonar.issue.ignore.multicriteria.TableWithoutCaptionCheck.resourceKey: src/main/webapp/app/**/*.*
+  sonar.issue.ignore.multicriteria.TableWithoutCaptionCheck.ruleKey: Web:TableWithoutCaptionCheck
+  sonar.issue.ignore.multicriteria.S4670.resourceKey: src/main/webapp/**/*
+  sonar.issue.ignore.multicriteria.S4670.ruleKey: css:S4670
+  sonar.issue.ignore.multicriteria.S5256.resourceKey: src/main/webapp/**/*
+  sonar.issue.ignore.multicriteria.S5256.ruleKey: Web:S5256
+
+
+slack-params: &slack-params
+  username: concourse-ci
+  icon_url: https://concourse-ci.org/images/trademarks/concourse-black.png
+  channel: ((<%= vaultKey %>.SLACK_CHANNEL))
+
+resource_types:
+  - name: sonar-runner
+    type: registry-image
+    source:
+      repository: "nexus.cardinalhealth.net:8445/cathive/concourse-sonarqube-resource"
+      tag: 0.11.4
+
+  - name: maven-resource
+    type: registry-image
+    source:
+      repository:  "nexus.cardinalhealth.net:8445/cah-maven-resource"
+      tag: latest
+
+  - name: slack-notification
+    type: registry-image
+    source:
+      repository: "nexus.cardinalhealth.net:8445/cfcommunity/slack-notification-resource"
+      tag: v1.5.0
+
+resources:
+  - name: project-source
+    type: git
+    source:
+      uri: ((<%= vaultKey %>.GIT_URI))
+      branch: master
+      private_key: ((<%= vaultKey %>.GIT_DEPLOY_PK))
+      ignore_paths:
+        - version/
+
+  - name: code-analysis
+    type: sonar-runner
+    source:
+      host_url: https://sonarqube.dev1.cardinalhealth.net
+      login: ((COMMON.SA_USER))
+      password: ((COMMON.SA_PASSWORD))
+
+  - name: temp-storage
+    type: maven-resource
+    source:
+      url: https://nexus.cardinalhealth.net/repository/((COMMON.TEAM_NAME))-maven-snapshot/
+      artifact: com.cardinalhealth:((<%= vaultKey %>.APP_NAME)):war
+      username: ((COMMON.SA_USER))
+      password: ((COMMON.SA_PASSWORD))
+
+  - name: nexus-snapshot
+    type: maven-resource
+    source:
+      url: https://nexus.cardinalhealth.net/repository/((COMMON.TEAM_NAME))-maven-release/
+      snapshot_url: https://nexus.cardinalhealth.net/repository/((COMMON.TEAM_NAME))-maven-snapshot/
+      artifact: com.cardinalhealth:((<%= vaultKey %>.APP_NAME)):war
+      username: ((COMMON.SA_USER))
+      password: ((COMMON.SA_PASSWORD))
+
+  - name: nexus-security-tools-veracode
+    type: maven-resource
+    source:
+      url: https://nexus.cardinalhealth.net/repository/security-maven-release/
+      artifact: com.cardinalhealth:staticAnalysisWrapper:jar
+
+  - name: build-version
+    type: semver
+    source:
+      driver: git
+      initial_version: 0.0.1
+      file: version/number
+      uri: ((<%= vaultKey %>.GIT_URI))
+      branch: master
+      private_key: ((<%= vaultKey %>.GIT_DEPLOY_PK))
+
+  - name: nexus-release
+    type: maven-resource
+    source:
+      url: ((COMMON.NEXUS_RELEASE_URL))
+      artifact: com.cardinalhealth:((<%= vaultKey %>.APP_NAME)):war
+      username: ((COMMON.SA_USER))
+      password: ((COMMON.SA_PASSWORD))
+
+  - name: utils
+    type: git
+    source:
+      uri: git@github.com:cah-rob-snider/eadevsecops_pipeline_scripts.git
+      branch: master
+      private_key: ((COMMON.GIT_LIBS_PK))
+
+  - name: resource-deploy-web-app-np
+    type: cf
+    source:
+      api: https://api.system.cf.np.gc.cahcloud.net
+      username: ((COMMON.SA_USER))
+      password: ((COMMON.PCF_PASSWORD_NP))
+      organization: ((COMMON.PCF_ORG))
+      space: ((<%= vaultKey %>.PCF_SPACE))-stage
+      skip_cert_check: false
+
+  - name: resource-deploy-web-app
+    type: cf
+    source:
+      api: https://api.system.cf.gc.cahcloud.net
+      username: ((COMMON.SA_USER))
+      password: ((COMMON.PCF_PASSWORD_PROD))
+      organization: ((COMMON.PCF_ORG))
+      space: ((<%= vaultKey %>.PCF_SPACE))
+      skip_cert_check: false
+
+  - name: notify
+    type: slack-notification
+    source:
+      url: ((COMMON.SLACK_WEBHOOK))
+
+jobs:
+  - name: build-test-scan
+    plan:
+      - get: project-source
+        trigger: true
+      - in_parallel:
+          - put: notify
+            params:
+              <<: *slack-params
+              text: "Build started"
+          - task: build
+            file: project-source/concourse/ci/tasks/build.yml
+            params:
+              <<: *env-params
+            on_failure:
+              put: notify
+              params:
+                <<: *slack-params
+                text: "Build failed"
+      - put: code-analysis
+        params:
+          project_path: sonarqube-analysis-input
+          additional_properties:
+            <<: *sonar-properties
+      - put: temp-storage
+        params:
+          file: build-out/((<%= vaultKey %>.APP_NAME))-*.war
+          version_file: build-out/version/number
+
+  - name: check-static-analysis
+    plan:
+      - in_parallel:
+          - get: project-source
+          - get: temp-storage
+          - get: nexus-security-tools-veracode
+          - get: code-analysis
+            passed: [build-test-scan]
+            trigger: true
+      - task: check-static-analysis
+        file: project-source/concourse/ci/tasks/veracode.yml
+        params:
+          VERACODE_API_ID: ((COMMON.VERACODE_API_ID))
+          VERACODE_API_KEY: ((COMMON.VERACODE_API_KEY))
+          APP_NAME: ((<%= vaultKey %>.APP_NAME))
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Build failed"
+  - name: qualitygate
+    plan:
+      - in_parallel:
+          - get: project-source
+          - get: temp-storage
+          - get: code-analysis
+            passed: [check-static-analysis]
+            trigger: true
+      - task: check-sonarqube-quality-gate
+        file: project-source/concourse/ci/tasks/quality-gate-check.yml
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Build failed"
+
+  - name: publish-snapshot
+    plan:
+      - in_parallel:
+          - get: code-analysis
+          - get: temp-storage
+            passed: [qualitygate]
+            trigger: true
+          - get: build-version
+            params: {bump: patch}
+          - get: project-source
+      - task: publish-snapshot
+        file: project-source/concourse/ci/tasks/publish-snapshot.yml
+        params:
+          <<: *env-params
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Build failed"
+      - put: nexus-snapshot
+        params:
+          file: deploy-output/((<%= vaultKey %>.APP_NAME)).war
+          version_file: deploy-output/version/number
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Build failed"
+      - put: build-version
+        params:
+          file: build-version/number
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Build failed"
+        on_success:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Build succeeded! Go promote it!"
+
+  - name: promote-snapshot
+    serial: true #successive commit are queued until previous one completed
+    plan:
+      - get: utils
+      - in_parallel:
+          - put: notify
+            params:
+              <<: *slack-params
+              text: "Promote snapshot started"
+          - task: download-snapshot
+            config:
+              platform: linux
+              image_resource:
+                type: registry-image
+                source:
+                  repository: "nexus.cardinalhealth.net:8445/cfmanteiga/alpine-bash-curl-jq"
+                  tag: latest
+              inputs:
+                - name: utils
+              outputs:
+                - name: release
+              run:
+                path: sh
+                args:
+                  - "-ec"
+                  - |
+                    set +x
+                    [[ -f "utils/utils.sh" ]] && source "utils/utils.sh" ||  \
+                        echo "No utils.sh found"
+                    version=((<%= vaultKey %>.VERSION_SNAPSHOT))
+                    name=((<%= vaultKey %>.APP_NAME))
+                    #this assume the group is always com.cardinal .com; change as needed
+                    downloadNexusArtifact ((<%= vaultKey %>.APP_NAME)) "com.cardinalhealth" $version ((COMMON.NEXUS_SNAPSHOT_URL)) "war"
+                    ls -ltr
+                    #extract and save release number
+                    snapshot_version=$(echo $version | grep -oE "[0-9]{8}\.[0-9]{6}-[0-9]{1,}" || true)
+                    release_version=$(echo ${version%-$snapshot_version})
+                    echo $release_version > ./release/number
+                    #extract and save extension
+                    # f=$(ls $name*)
+                    # echo $f
+                    # echo "./release/"((<%= vaultKey %>.APP_NAME))"${f##*.}" > fullname.txt
+                    # APP_NAME=$(cat fullname.txt)
+                    # mv ./$name* ./release/$name$release_version."${f##*.}"
+                    #move file to output folder
+                    mv ./$name* ./release/
+            on_failure:
+              put: notify
+              params:
+                <<: *slack-params
+                text: "Promote snapshot failed"
+      - put: nexus-release # Upload intermediate build to temp storage
+        params:
+          file: ./release/*.*   #./release/((<%= vaultKey %>.APP_NAME)).jar
+          version_file: ./release/number
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Promote snapshot failed"
+        on_success:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Promote snapshot succeeded! Go deploy to stage!"
+
+  - name: pull-jar-stage
+    plan:
+      - get: project-source
+      - get: utils
+      - in_parallel:
+          - put: notify
+            params:
+              <<: *slack-params
+              text: "Deploy to stage started"
+          - task: build
+            config:
+              platform: linux
+              image_resource:
+                type: registry-image #Concourse 5.X
+                source:
+                  repository: "nexus.cardinalhealth.net:8445/rsnider19/alpine-java-curl-jq-bash"
+                  tag: 0.0.1
+              inputs:
+                - name: project-source
+                - name: utils
+              outputs:
+                - name: output-jar
+              run:
+                path: sh
+                args:
+                  - "-ecx"
+                  - |
+                    ls -al
+                    [[ -f "utils/utils.sh" ]] && source "utils/utils.sh" ||  \
+                        echo "No utils.sh found"
+                    set -x
+                    downloadNexusArtifact ((<%= vaultKey %>.APP_NAME)) "com.cardinalhealth" ((<%= vaultKey %>.VERSION_RELEASE_STAGE)) ((COMMON.NEXUS_RELEASE_URL)) "war"
+                    ls -al
+                    mv ./((<%= vaultKey %>.APP_NAME))*.war ./output-jar/((<%= vaultKey %>.APP_NAME)).war
+            on_failure:
+              put: notify
+              params:
+                <<: *slack-params
+                text: "Deploy to stage failed"
+
+      # a manifest file must be created in the same directory of the pipeline
+      - put: resource-deploy-web-app-np
+        params:
+          manifest: ./project-source/concourse/manifest.yml #parh to manifest reltive to pipeline
+          path: ./output-jar/((<%= vaultKey %>.APP_NAME)).war # path to jar
+          vars:
+            app_name: ((<%= vaultKey %>.PCF_SPACE))-stage
+            memory: 1G
+            sql-service: postgres-stage
+            route: ((<%= vaultKey %>.PCF_SPACE))-stage.apps.cf.np.gc.cahcloud.net
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Deploy to stage failed"
+        on_success:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Deploy to stage succeeded! Go for it Elwood!"
+
+  - name: pull-jar-prod
+    plan:
+      - get: project-source
+      - get: utils
+      - in_parallel:
+          - put: notify
+            params:
+              <<: *slack-params
+              text: "Deploy to prod started"
+          - task: build
+            config:
+              platform: linux
+              image_resource:
+                type: registry-image #Concourse 5.X
+                source:
+                  repository: "nexus.cardinalhealth.net:8445/rsnider19/alpine-java-curl-jq-bash"
+                  tag: 0.0.1
+              inputs:
+                - name: project-source
+                - name: utils
+              outputs:
+                - name: output-jar
+              run:
+                path: sh
+                args:
+                  - "-ecx"
+                  - |
+                    ls -al
+                    [[ -f "utils/utils.sh" ]] && source "utils/utils.sh" ||  \
+                        echo "No utils.sh found"
+                    set -x
+                    downloadNexusArtifact ((<%= vaultKey %>.APP_NAME)) "com.cardinalhealth" ((<%= vaultKey %>.VERSION_RELEASE_PROD)) ((COMMON.NEXUS_RELEASE_URL)) "war"
+                    ls -al
+                    mv ./((<%= vaultKey %>.APP_NAME))*.war ./output-jar/((<%= vaultKey %>.APP_NAME)).war
+            on_failure:
+              put: notify
+              params:
+                <<: *slack-params
+                text: "Deploy to prod failed"
+      - put: resource-deploy-web-app
+        params:
+          manifest: ./project-source/concourse/manifest.yml #parh to manifest reltive to pipeline
+          path: ./output-jar/((<%= vaultKey %>.APP_NAME)).war # path to jar
+          vars:
+            app_name: ((<%= vaultKey %>.PCF_SPACE))
+            memory: 2G
+            sql-service: postgres
+            route: ((<%= vaultKey %>.PCF_SPACE)).apps.cf.gc.cahcloud.net
+        on_failure:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Deploy to prod failed"
+        on_success:
+          put: notify
+          params:
+            <<: *slack-params
+            text: "Deploy to prod succeeded! Woohoo!"

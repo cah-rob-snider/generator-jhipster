@@ -1,0 +1,20 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: nexus.cardinalhealth.net:8445/cathive/concourse-sonarqube-qualitygate-task
+    tag: latest # Use one of the versioned tags for reproducible builds!
+
+inputs:
+  - name: code-analysis
+  - name: project-source
+outputs:
+  - name: build-out
+
+run:
+  path: /sonarqube-qualitygate-check
+  dir: code-analysis
+
+params:
+  TERM: -dumb

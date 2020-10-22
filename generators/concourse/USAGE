@@ -1,0 +1,8 @@
+Description:
+    Generates a `concourse` folder with the pipeline yml to deploy
+
+Example:
+    jhipster concourse
+
+    This will create:
+        a concourse directory

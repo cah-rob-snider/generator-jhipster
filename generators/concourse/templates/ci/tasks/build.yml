@@ -1,0 +1,24 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: "nexus.cardinalhealth.net:8445/rsnider19/openjdk11-node10"
+    tag: 1.0.8
+
+inputs:
+  - name: project-source
+
+outputs:
+  - name: sonarqube-analysis-input
+  - name: build-out
+run:
+  path: "project-source/concourse/ci/tasks/build.sh"
+
+params:
+  TERM: -dumb
+
+caches:
+  - path: .npm
+  - path: project-source/node_modules
+  - path: .gradle/

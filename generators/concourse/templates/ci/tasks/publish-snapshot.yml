@@ -1,0 +1,18 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: "nexus.cardinalhealth.net:8445/anapsix/alpine-java"
+    tag: latest # Use one of the versioned tags for reproducible builds!
+inputs:
+  - name: project-source
+  - name: temp-storage
+  - name: build-version
+outputs:
+  - name: deploy-output
+
+run:
+   path: "project-source/concourse/ci/tasks/publish-snapshot.sh"
+params:
+  TERM: -dumb
