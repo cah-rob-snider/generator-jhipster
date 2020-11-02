@@ -157,6 +157,7 @@ const expectedFiles = {
         '.gitattributes',
         '.editorconfig',
         '.huskyrc',
+        '.npmrc',
         '.lintstagedrc.js',
     ],
 

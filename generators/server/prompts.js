@@ -145,7 +145,7 @@ function askForServerSideOpts(meta) {
             type: 'input',
             name: 'oktaUserGroup',
             message: 'What is the faux Okta User Group (for A-OktaSSO-MyNewApp-User it would be MyNewApp)?',
-            default: this.getOktaUserGroupName(),
+            default: this.getPrettyNameNoSpaces(),
             validate: input =>
                 /\b([A-Z][a-z]+)+/.test(input)
                     ? true

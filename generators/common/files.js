@@ -34,6 +34,7 @@ const commonFiles = {
         {
             templates: [
                 'README.md',
+                '.npmrc',
                 {
                     file: 'gitignore',
                     renameTo: () => '.gitignore',
